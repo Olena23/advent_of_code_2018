@@ -43,8 +43,8 @@ func deletePair(longStr string, size int) int {
 							string(longStr[i]) == strings.ToUpper(string(longStr[i+1])) {
 							if i+2 <= len(longStr) {
 								longStr = longStr[:i] + longStr[i+2:]
+								i = i+2
 							}
-							break
 						}
 					}
 				}
