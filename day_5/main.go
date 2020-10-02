@@ -1,10 +1,10 @@
 package main
 
 import (
-	"os"
-	"log"
 	"bufio"
 	"fmt"
+	"log"
+	"os"
 	"strings"
 )
 
@@ -13,6 +13,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	longStr := ""
 	defer file.Close()
 	sc := bufio.NewScanner(file)
@@ -20,10 +21,8 @@ func main() {
 		longStr = sc.Text()
 	}
 
-	size := len(longStr)
-	out := deletePair(longStr, size)
+	out := deletePair(longStr)
 	fmt.Println(out)
-
 
 	//Part II
 	len, char := deleteOne(longStr)
@@ -31,7 +30,8 @@ func main() {
 	fmt.Println(char)
 }
 
-func deletePair(longStr string, size int) int {
+func deletePair(longStr string) int {
+	size := len(longStr)
 	size2 := 0
 	for {
 		if size > size2 {
@@ -39,11 +39,10 @@ func deletePair(longStr string, size int) int {
 			for i := range longStr {
 				if i+1 < len(longStr) {
 					if longStr[i] != longStr[i+1] {
-						if string(longStr[i]) == strings.ToLower(string(longStr[i+1])) ||
-							string(longStr[i]) == strings.ToUpper(string(longStr[i+1])) {
+						if strings.ToLower(string(longStr[i])) == strings.ToLower(string(longStr[i+1])) {
 							if i+2 <= len(longStr) {
 								longStr = longStr[:i] + longStr[i+2:]
-								i = i+2
+								i += 2
 							}
 						}
 					}
@@ -61,21 +60,21 @@ func deletePair(longStr string, size int) int {
 
 func deleteOne(longStr string) (int, string) {
 
-	usedPairs := map[string]bool{}
+	usedPairs := map[string]struct{}{}
 
 	shortestStr := len(longStr)
 	shortestChar := ""
 	newLen := len(longStr)
 
 	for i := range longStr {
-		if usedPairs[strings.ToLower(string(longStr[i]))] == false {
-			usedPairs[strings.ToLower(string(longStr[i]))] = true
-			usedPairs[strings.ToUpper(string(longStr[i]))] = true
+		if _, ok := usedPairs[strings.ToLower(string(longStr[i]))]; !ok {
+			usedPairs[strings.ToLower(string(longStr[i]))] = struct{}{}
+			usedPairs[strings.ToUpper(string(longStr[i]))] = struct{}{}
 
 			testStr := longStr
 			testStr = strings.Replace(testStr, strings.ToLower(string(longStr[i])), "", -1)
 			testStr = strings.Replace(testStr, strings.ToUpper(string(longStr[i])), "", -1)
-			newLen = deletePair(testStr, len(testStr))
+			newLen = deletePair(testStr)
 		}
 		if newLen < shortestStr {
 			shortestStr = newLen
