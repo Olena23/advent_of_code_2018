@@ -2,17 +2,18 @@ package main
 
 import (
 	"bufio"
+	"fmt"
+	"index/suffixarray"
 	"log"
 	"os"
-	"fmt"
 	"regexp"
-	"index/suffixarray"
+
 	"github.com/sergi/go-diff/diffmatchpatch"
 )
 
 func main() {
-	sum2 := 0
-	sum3 := 0
+	sum2, sum3 := 0, 0
+
 	file, err := os.Open("day_2/input.txt")
 	if err != nil {
 		log.Fatal(err)
@@ -22,24 +23,24 @@ func main() {
 	sc := bufio.NewScanner(file)
 	for sc.Scan() {
 		newStr := sc.Text()
-		usedChars := make(map[string]bool)
-		usedPairs := make(map[int]bool)
+		usedChars := make(map[string]struct{})
+		usedPairs := make(map[int]struct{})
 		for _, val := range newStr {
-			if !usedChars[string(val)] {
+			if _, ok := usedChars[string(val)]; !ok {
 				r := regexp.MustCompile(string(val))
 				index := suffixarray.New([]byte(newStr))
 				results := index.FindAllIndex(r, -1)
-				usedChars[string(val)] = true
-				if !usedPairs[2] {
+				usedChars[string(val)] = struct{}{}
+				if _, ok := usedPairs[2]; !ok {
 					if len(results) == 2 {
 						sum2++
-						usedPairs[2] = true
+						usedPairs[2] = struct{}{}
 					}
 				}
-				if !usedPairs[3] {
+				if _, ok := usedPairs[3]; !ok {
 					if len(results) == 3 {
 						sum3++
-						usedPairs[3] = true
+						usedPairs[3] = struct{}{}
 					}
 				}
 			}
@@ -52,7 +53,7 @@ func main() {
 
 }
 
-func part2()  {
+func part2() {
 	file, err := os.Open("day_2/input.txt")
 	if err != nil {
 		log.Fatal(err)
